@@ -1,7 +1,7 @@
 (define-module (vec3)
   #:export (vec3 vref vset!
 		 ix3 v3-bin-do! v3-bin-do
-		 v3-add v3-add! vscale vscale!
+		 v3-add v3-add! vscale vscale! neg neg!
 		 dot cross <-))
 
 (define-inlinable (vec3 a b c) (f64vector a b c))
@@ -68,7 +68,8 @@
 	      (vref v 1))
 	   (* (vref u 1)
 	      (vref v 0)))))
-
+(define-inlinable (neg! v) (vscale! v -1))
+(define-inlinable (neg v) (vscale v -1))
 (define-inlinable (<- v1 v2)
   (vset! v1 0 (vref v1 0))
   (vset! v1 1 (vref v1 1))
