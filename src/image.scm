@@ -1,7 +1,11 @@
 (define-module (image)
+  #:use-module (ice-9 threads)
+  #:use-module (ice-9 control)
+  #:use-module ((srfi srfi-1) #:select (fold unfold))
   #:export (make-image color-at color-set! color
 		       red blue green alpha
-		       image-do write-image))
+		       image-do write-image
+		       para-image-do))
 
 (define-public RED_MASK   #xff000000)
 (define-public GREEN_MASK #x00ff0000)
@@ -49,6 +53,31 @@
 	(set! j (1+ j)))
       (set! j 0)
       (set! i (1+ i)))
+    #t))
+
+
+(define-inlinable (div-img img nproc)
+  (define l (array-length img))
+  (define n nproc)
+  (define step (floor-quotient l n))
+  (define rem  (floor-remainder l n))
+  (define res (unfold (lambda (i) (>= i n))
+		      (lambda (i) `(,(+ rem (* i step))
+			       ,(+ rem (* (1+ i) step) -1)))
+		      1+ (if (zero? rem) 0 1)))
+  (map (lambda (i)
+	 (make-shared-array img list
+			    i
+			    (cadr (array-dimensions img))))
+       (if (zero? rem)
+	   res
+	   (cons `(0 ,rem) res))))
+(define-syntax-rule (para-image-do nproc img i j body ...)
+  (begin
+    (par-for-each (lambda (a)
+		    (image-do a
+			      img i j body ...))
+		  (div-img img nproc))
     #t))
 
 (define (write-image img port)
