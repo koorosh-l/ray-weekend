@@ -31,12 +31,15 @@
 			  (vref v3 i))))]))
 (define-syntax v3-bin-do
   (syntax-rules ()
+    [(_ op v1) (vcopy v1)]
     [(_ op v1 v2)
      (let ([ret (vec3 0 0 0)])
        (ix3 i
 	    (vset! ret i (op (vref v1 i)
 			     (vref v2 i))))
-       ret)]))
+       ret)]
+    [(_ op v1 v2 v* ...)
+     ()]))
 
 (define-inlinable (v3-add! v1 v2 v3) (v3-bin-do! + v1 v2 v3))
 (define-inlinable (v3-add v1 v2) (v3-bin-do + v1 v2))

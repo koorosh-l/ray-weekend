@@ -31,10 +31,20 @@ exec guile -L ./src -e main -s "$0" "$@"
 
   (define camera-center (vec3 0 0 0))
 
+  (define vp-u (vec3 vp-width 0 0))
+  (define vp-v (vec3 0 (- vp-height) 0))
+
+  (define pixel-du (vscale vp-u (/ 1 width)))
+  (define pixel-dv (vscale vp-v (/ 1 height)))
+
+  (define vp-upper-left (neg (v3-add (neg camera-center)
+				     (vec3 0 0 focal-length)
+				     (vscale vp-u 1/2)
+				     (vscale vp-v 1/2))))
+  (define pixel00-loc (v3-add ))
   (define img (make-image height width))
 
   (image-do img j i
-	    ;; (display (cons i j)) (newline)
 	    (color-set! img j i
 			(color (grad-pixel i width)
 			       (grad-pixel j height)
