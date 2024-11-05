@@ -8,11 +8,11 @@
 		       red blue green alpha
 		       image-do write-image
 		       para-image-do vec3->color))
-(define (vec3->color v)
-  ;; (define v (unit-vector v))
-  (color (float->int (* 255.999 (vx v)))
-	 (float->int (* 255.999 (vy v)))
-	 (float->int (* 255.999 (vz v)))
+(define-inlinable (vec3->color v)
+  (define a (unit-vector v))
+  (color (float->int (* 255.999 (vx a)))
+	 (float->int (* 255.999 (vy a)))
+	 (float->int (* 255.999 (vz a)))
 	 0))
 
 (define-public RED_MASK   #xff000000)
