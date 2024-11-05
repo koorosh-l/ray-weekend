@@ -1,11 +1,19 @@
 (define-module (image)
+  #:use-module (vec3)
+  #:use-module (utils)
   #:use-module (ice-9 threads)
   #:use-module (ice-9 control)
   #:use-module ((srfi srfi-1) #:select (fold unfold))
   #:export (make-image color-at color-set! color
 		       red blue green alpha
 		       image-do write-image
-		       para-image-do))
+		       para-image-do vec3->color))
+(define (vec3->color v)
+  ;; (define v (unit-vector v))
+  (color (float->int (* 255.999 (vx v)))
+	 (float->int (* 255.999 (vy v)))
+	 (float->int (* 255.999 (vz v)))
+	 0))
 
 (define-public RED_MASK   #xff000000)
 (define-public GREEN_MASK #x00ff0000)
@@ -53,7 +61,7 @@
 	(set! j (1+ j)))
       (set! j 0)
       (set! i (1+ i)))
-    #t))
+    ))
 
 
 (define-inlinable (div-img img nproc)
