@@ -12,11 +12,14 @@ exec guile -L ./src -e main -s "$0" "$@"
 (define (grad-pixel x d) (inexact->exact (floor (* 255.999 (/ (* x 1.0) (1- d))))))
 
 (define-inlinable (ray-color ray)
-  (define a (* .5 (1+ (vy (unit-vector (dir ray))))))
-  (define c (vec3 1 1 1))
-  (vscale! c (- 1 a))
-  (v3-add! c (vscale (vec3 .5 .7 1.) a) c)
-  (vec3->color c))
+  (if (sphere-colide ray (vec3 0 0.2 -3) .5)
+      (color 90 30 150 0)
+      (begin
+	(let ([a (* .5 (1+ (vy (unit-vector (dir ray)))))]
+	      [c (vec3 1 1 1)])
+	  (vscale! c (- 1 a))
+	  (v3-add! c (vscale (vec3 .5 .5 1.) a) c)
+	  (vec3->color c)))))
 
 (define (main args)
   (define width 100)
@@ -49,9 +52,8 @@ exec guile -L ./src -e main -s "$0" "$@"
 				 (vscale vp-v .5))))))
   (define pixel00-loc (v3-add vp-upper-left
 			      (vscale (v3-add pixel-du pixel-dv) .5)))
-  ;; (lnr pixel00-loc)
-  (define img (make-image height width))
 
+  (define img (make-image height width))
   (image-do img j i
 	    (let* ([pcenter (v3-add pixel00-loc (v3-add (vscale pixel-du i) (vscale pixel-dv j)))]
 		   [ray-dir (v3-add pcenter (neg camera-center))]
