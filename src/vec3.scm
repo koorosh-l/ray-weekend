@@ -2,12 +2,16 @@
   #:export (vec3 vref vset!
 		 ix3 v3-bin-do! v3-bin-do
 		 v3-add v3-add! vscale vscale! neg neg!
-		 dot cross <-))
+		 dot cross <-
+		 vx vy vz
+		 vlen unit-vector))
 
 (define-inlinable (vec3 a b c) (f64vector a b c))
 (define-inlinable (vref v ix) (f64vector-ref v ix))
 (define-inlinable (vset! v ix f) (f64vector-set! v ix f))
-
+(define-inlinable (vx v) (vref v 0))
+(define-inlinable (vy v) (vref v 1))
+(define-inlinable (vz v) (vref v 2))
 (define-syntax ix3
   (syntax-rules ()
     [(_ ix body ...)
@@ -77,3 +81,9 @@
   (vset! v1 0 (vref v1 0))
   (vset! v1 1 (vref v1 1))
   (vset! v1 2 (vref v1 2)))
+(define-inlinable (vlen v)
+  (sqrt (+ (* (vx v) (vx v))
+	   (* (vy v) (vy v))
+	   (* (vz v) (vz v)))))
+(define-inlinable (unit-vector v)
+  (vscale v (/ 1 (vlen v))))
