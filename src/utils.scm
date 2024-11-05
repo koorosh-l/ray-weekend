@@ -1,0 +1,6 @@
+(define-module (utils)
+  #:export (lnr))
+(define-syntax-rule (lnr exp ...)
+  (let ([e (begin exp ...)])
+    (format (current-error-port) "----------~a ~a" (current-source-location) e)
+    e))
