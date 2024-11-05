@@ -12,13 +12,13 @@ exec guile -L ./src -e main -s "$0" "$@"
 (define (grad-pixel x d) (inexact->exact (floor (* 255.999 (/ (* x 1.0) (1- d))))))
 
 (define-inlinable (ray-color ray)
-  (if (sphere-colide ray (vec3 0 0.2 -3) .5)
-      (color 90 30 150 0)
+  (if (sphere-colide ray (vec3 0 0 -1) .5)
+      (color 255 0 0 0)
       (begin
 	(let ([a (* .5 (1+ (vy (unit-vector (dir ray)))))]
 	      [c (vec3 1 1 1)])
 	  (vscale! c (- 1 a))
-	  (v3-add! c (vscale (vec3 .5 .5 1.) a) c)
+	  (v3-add! c (vscale (vec3 .5 .7 1.) a) c)
 	  (vec3->color c)))))
 
 (define (main args)
