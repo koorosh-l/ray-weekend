@@ -5,7 +5,7 @@
 		 v3-add v3-add! vscale vscale! neg neg!
 		 dot cross <-
 		 vx vy vz
-		 vlen unit-vector unit-vector!))
+		 vlen vlen2 unit-vector unit-vector!))
 
 (define-inlinable (vec3 a b c) (f64vector a b c))
 (define-inlinable (vref v ix) (f64vector-ref v ix))
@@ -82,9 +82,11 @@
   (vset! v1 0 (vref v2 0))
   (vset! v1 1 (vref v2 1))
   (vset! v1 2 (vref v2 2)))
+(define-inlinable (vlen2 v)
+  (+ (* (vx v) (vx v))
+     (* (vy v) (vy v))
+     (* (vz v) (vz v))))
 (define-inlinable (vlen v)
-  (sqrt (+ (* (vx v) (vx v))
-	   (* (vy v) (vy v))
-	   (* (vz v) (vz v)))))
+  (sqrt (vlen2 v)))
 (define-inlinable (unit-vector v) (vscale v (/ 1 (vlen v))))
 (define-inlinable (unit-vector! v) (vscale! v (/ 1 (vlen v))))
