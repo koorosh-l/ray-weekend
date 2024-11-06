@@ -12,17 +12,21 @@
   (v3-add! ret (origin ray) ret)
   ret)
 ;; returns a cons cell or empty list if there is no intersection
-(define-inlinable (sphere-colide ray sph-origin sph-radius)
-  (let* ([q (origin ray)]
-	 [d (dir    ray)]
-	 [c sph-origin]
-	 [c-q (v3-add c (neg q))]
-	 [r sph-radius]
-	 [a (dot d d)]
-	 [b (dot (vscale d -2) c-q)]
-	 [c (- (dot c-q c-q) (* r r))]
-	 [disc (- (* b b) (* 4 a c))])
-    (if (< disc 0)
-	-1.0
-	(/ (+ (- b) (- (sqrt disc)))
-	   (* 2 a)))))
+(define-inlinable (sq a) (* a a))
+;;unsafe for threads
+(define oc (vec3 0 0 0))
+(define-inlinable (sphere-colide ray center r)
+  ;; (define oc (vcopy (origin ray)))
+  (<- oc (origin ray))
+  (vscale! oc -1)
+  (v3-add! oc
+	   center
+	   oc)
+  (define d (dir ray))
+  (define a (vlen2 d))
+  (define h (dot d oc))
+  (define c (- (vlen2 oc) (* r r)))
+  (define disc (- (* h h) (* a c)))
+  (if (< disc 0)
+      -1.0
+      (- h (/ (sqrt disc) a))))
