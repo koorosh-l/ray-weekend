@@ -10,15 +10,25 @@ exec guile -L ./src -s "$0" "$@"
 	     (ice-9 match))
 
 (define (grad-pixel x d) (inexact->exact (floor (* 255.999 (/ (* x 1.0) (1- d))))))
+(define sphere-origin (vec3 0 0 -1))
+(define one (vec3 1 1 1))
+(define sphere-radius .5)
 
 (define-inlinable (ray-color ray)
-  (if (sphere-colide ray (vec3 0 0 -1) .5)
-      (color 255 0 0 0)
+  (define t (sphere-colide ray sphere-origin sphere-radius))
+  (define v (vcopy sphere-origin))
+  (if (> t 0)
+      (begin
+	(v3-add! v (ray-at ray t) (neg v))
+	(unit-vector! v)
+	(v3-add! v v one)
+	(vscale! v .5)
+	(vec3->color v))
       (begin
 	(let ([a (* .5 (1+ (vy (unit-vector (dir ray)))))]
 	      [c (vec3 1 1 1)])
 	  (vscale! c (- 1 a))
-	  (v3-add! c (vscale (vec3 .5 .7 1.) a) c)
+	  (v3-add! c (vscale (vec3 .1 .5 1.) a) c)
 	  (vec3->color c)))))
 
 (define width 100)
@@ -67,7 +77,6 @@ exec guile -L ./src -s "$0" "$@"
 	  (vscale! intm1 j)
 	  (v3-add! intm0 intm0 intm1)
 	  (v3-add! pcenter pixel00-loc intm0)
-	  (lnr pcenter)
 	  (<- intm0 camera-center)
 	  (neg! intm0)
 	  (v3-add! ray-dir pcenter intm0)
