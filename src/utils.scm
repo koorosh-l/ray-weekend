@@ -1,5 +1,5 @@
 (define-module (utils)
-  #:export (lnr float->int))
+  #:export (lnr float->int isit?))
 
 (define-inlinable (float->int x) (inexact->exact (floor x)))
 
@@ -13,3 +13,14 @@
     (cond
      [(zero? n) #t]
      [else (thunk) (loop (1- n))])))
+
+(define-syntax isit?
+  (syntax-rules ()
+    [(_ msg pred? obj)
+     (when (not (pred? obj))
+       (error (format (current-error-port)
+		      "~a ~a" (current-source-location) msg)
+	      'obj 'pred?))]
+    [(_ msg pred? obj obj* ...)
+     (begin (isit? msg pred? obj)
+	    (isit? msg pred? obj* ...))]))

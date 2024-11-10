@@ -1,12 +1,15 @@
 (define-module (vec3)
-  #:export (vec3 vref vset!
+  #:export (vec3? vec3 vref vset!
 		 ix3 v3-bin-do! v3-bin-do
 		 vcopy
 		 v3-add v3-add! vscale vscale! neg neg!
 		 dot cross <-
 		 vx vy vz
 		 vlen vlen2 unit-vector unit-vector!))
-
+(define-inlinable (vec3? v)
+  (and (array? v)
+       (equal? 'f64 (array-type v))
+       (= 3 (array-length v))))
 (define-inlinable (vec3 a b c) (f64vector a b c))
 (define-inlinable (vref v ix) (f64vector-ref v ix))
 (define-inlinable (vset! v ix f) (f64vector-set! v ix f))
