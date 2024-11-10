@@ -8,7 +8,7 @@
     (format (current-error-port) "----------~a ~a\n" (current-source-location) e)
     e))
 
-(define (do-time thunk n)
+(define-public (do-time thunk n)
   (let loop ([n n])
     (cond
      [(zero? n) #t]

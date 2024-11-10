@@ -13,23 +13,9 @@ exec guile -L ./src -s "$0" "$@"
 (define sphere-origin (vec3 0 0 -1))
 (define one (vec3 1 1 1))
 (define sphere-radius .5)
-
-(define-inlinable (ray-color ray)
-  (define t (sphere-colide ray sphere-origin sphere-radius))
-  (define v (vcopy sphere-origin))
-  (if (> t 0)
-      (begin
-	(v3-add! v (ray-at ray t) (neg v))
-	(unit-vector! v)
-	(v3-add! v v one)
-	(vscale! v .5)
-	(vec3->color v))
-      (begin
-	(let ([a (* .5 (1+ (vy (unit-vector (dir ray)))))]
-	      [c (vec3 1 1 1)])
-	  (vscale! c (- 1 a))
-	  (v3-add! c (vscale (vec3 .1 .5 1.) a) c)
-	  (vec3->color c)))))
+;; order of objects matters alot
+(define objects `(,(make-sphere sphere-origin sphere-radius)
+		  ))
 
 (define width 100)
 (define file)
@@ -81,7 +67,7 @@ exec guile -L ./src -s "$0" "$@"
 	  (neg! intm0)
 	  (v3-add! ray-dir pcenter intm0)
 	  (color-set! img j i
-		      (ray-color (ray camera-center ray-dir))))
+		      (ray-color (ray camera-center ray-dir) objects)))
 
 (call-with-output-file file
   (lambda (port) (write-image img port)))
