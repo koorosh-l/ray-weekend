@@ -1,25 +1,67 @@
 (define-module (hittables)
   #:use-module (vec3)
   #:use-module (utils)
+  #:use-module (ray)
   #:use-module (srfi srfi-9)
-  #:export (hit-record hit-point hit-normal hit-t))
+  #:use-module (ice-9 control)
+  #:use-module (ice-9 match)
+  #:export (hit-record hit-point hit-normal hit-t
+		       <hit-record>
+		       make-hit-record
+		       hittable hittable-collide-func hittable-object
+		       get-point set-point!
+		       get-normal set-normal!
+		       get-front-face set-front-face!
+		       get-t set-t! get-obj set-obj!
+		       hit hit! hit?
+		       find-cols! shade))
 
 (define-record-type <hit-record>
-  (hit-record point normal t front-face)
+  (hit-record point normal t obj)
   hit-record?
-  (point      get-point      set-point!)
-  (normal     get-normal     set-normal!)
-  (front-face get-front-face set-front-face!)
-  (t get-t set-t))
+  (point      get-point      _set-point!)
+  (normal     get-normal     _set-normal!)
+  ;; (front-face get-front-face _set-front-face!)
+  (t get-t set-t!)
+  (obj get-obj set-obj!)) ;; pointer optimize later
 
-(define hittable            cons)
-(define hittable-colide-func car)
-(define hittable-object      cdr)
+(define-public make-hit-record
+  (case-lambda
+    [() (hit-record (vec3 0 0 0)
+		    (vec3 0 0 0)
+		    0 #f)]
+    [(point normal t obj)
+     (isit? "not a vector" vec3? point normal)
+     (isit? "not an f64" inexact? t)
+     (hit-record point normal t obj)]))
 
-(define (hit object ray tmin tmax) ;;-> hrec
-  (define hrec (make-hit-record))
-  ((hittable-colide-func object) object hrec)
-  hrec)
+(define (set-point! hrec px py pz)
+  (let ([p (get-point hrec)])
+    (vset! p 0 px)
+    (vset! p 1 py)
+    (vset! p 2 pz)))
+(define (set-normal! hrec px py pz)
+  (let ([p (get-normal hrec)])
+    (vset! p 0 px)
+    (vset! p 1 py)
+    (vset! p 2 pz)))
 
-(define (hit! object ray tmin tmax hrec)
-  ((hittable-colide-func object) object hrec))
+(define-inlinable (hittable collider shader) (cons collider shader))
+(define-public hittable-collide-func car)
+(define-public hittable-shader       cdr)
+
+(define-public (shade hrec)
+  (match-let* ([($ <hit-record> point normal t obj) hrec])
+    ((hittable-shader obj) hrec)))
+
+
+(define-inlinable (hit! ray obj hrec)
+  ((hittable-collide-func obj) ray hrec)
+  (set-obj! hrec obj))
+
+(define (hit? hrec) (not (zero? (get-t hrec))))
+
+(define-inlinable (find-cols! ray objz hrec) ;; to be minfied with eu-dist
+  (car (map (lambda (o)
+	      (hit! ray o hrec))
+	    objz)))

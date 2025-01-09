@@ -1,11 +1,12 @@
 (define-module (vec3)
   #:export (vec3? vec3 vref vset!
-		 ix3 v3-bin-do! v3-bin-do
-		 vcopy
-		 v3-add v3-add! vscale vscale! neg neg!
-		 dot cross <-
-		 vx vy vz
-		 vlen vlen2 unit-vector unit-vector!))
+		  ix3 v3-bin-do! v3-bin-do
+		  vcopy
+		  v3-add v3-add! vscale vscale! neg neg!
+		  dot cross <-
+		  vx vy vz
+		  vlen vlen2 unit-vector unit-vector!
+		  eu-dist))
 (define-inlinable (vec3? v)
   (and (array? v)
        (equal? 'f64 (array-type v))
@@ -93,3 +94,8 @@
   (sqrt (vlen2 v)))
 (define-inlinable (unit-vector v) (vscale v (/ 1 (vlen v))))
 (define-inlinable (unit-vector! v) (vscale! v (/ 1 (vlen v))))
+(define-inlinable (eu-dist u v)
+  (sqrt
+   (+ (* (- (vx v) (vx u)) (- (vx v) (vx u)))
+      (* (- (vy v) (vy u)) (- (vy v) (vy u)))
+      (* (- (vz v) (vz u)) (- (vz v) (vz u))))))
