@@ -9,6 +9,7 @@ exec guile -L ./src -s "$0" "$@"
 	     (utils)
 	     (hittables)
 	     (objects sphere)
+	     (objects backdrop)
 	     (camera)
 	     (ice-9 match))
 
@@ -16,7 +17,10 @@ exec guile -L ./src -s "$0" "$@"
 (define sphere-origin (vec3 0. 0. -1.))
 (define sphere-radius .5)
 ;; order of objects matters alot for now dot dot dot
-(define objz `(,(sphere-collider sphere-origin sphere-radius)))
+(define bd (backdrop-collider))
+(display bd)
+(define objz `(,bd
+	       ,(sphere-collider sphere-origin sphere-radius)))
 ;;defaults
 (define aspect-ratio (/ 16. 9.))
 (define width 400)

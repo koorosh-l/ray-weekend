@@ -61,7 +61,18 @@
 
 (define (hit? hrec) (not (zero? (get-t hrec))))
 
-(define-inlinable (find-cols! ray objz hrec) ;; to be minfied with eu-dist
-  (car (map (lambda (o)
-	      (hit! ray o hrec))
-	    objz)))
+(define (find-cols! ray objz hrec) ;; to be minfied with eu-dist
+  (define tmp (make-hit-record))
+  (hit! ray (car objz) hrec)
+
+  (define (smaller h1 h2)
+    (if (< (get-t h1) (get-t h2)) h1 h2))
+
+  (define obj (cdr (car (filter (lambda (o)
+				  (not (zero? (car o))))
+				(sort (map (lambda (o)
+					     (hit! ray o tmp)
+					     (cons (get-t tmp) o))
+					   objz)
+				      (lambda (a b) (< (car a) (car b))))))))
+  (hit! ray obj hrec))
