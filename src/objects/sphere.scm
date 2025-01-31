@@ -5,17 +5,7 @@
   #:use-module (image)
   #:use-module (hittables))
 
-(define-inlinable (normal-shader hrec)
-  (define res (vcopy (get-normal hrec)))
-  (define one (vec3 1 1 1))
-  (if (hit? hrec)
-      (begin
-	(v3-add! res res one)
-	(vscale! res .5)
-	(vec3->color res))
-      (color 0 0 0 0)))
-
-(define-public (sphere-collider center radius)
+(define-public (sphere-collider center radius shader)
   (let ([center center]
 	[radius radius]
 	[oc (vec3 0 0 0 )])
@@ -40,4 +30,4 @@
 		  (<- hnormal v)
 		  hnormal
 		  hrec))
-	      normal-shader)))
+	      shader)))

@@ -10,17 +10,19 @@ exec guile -L ./src -s "$0" "$@"
 	     (hittables)
 	     (objects sphere)
 	     (objects backdrop)
+	     (shader simple)
 	     (camera)
 	     (ice-9 match))
 
 ;;them objects boyyyyyyy
 (define sphere-origin (vec3 0. 0. -1.))
 (define sphere-radius .5)
-;; order of objects matters alot for now dot dot dot
+(define earth (sphere-collider (vec3 0 -100.5 -1) 90 (constant-color (color 255 255 0 0))))
+;; order  of objects matters alot for now dot dot dot
 (define bd (backdrop-collider))
-(display bd)
 (define objz `(,bd
-	       ,(sphere-collider sphere-origin sphere-radius)))
+	       ,(sphere-collider sphere-origin sphere-radius normal-shader)
+	       ))
 ;;defaults
 (define aspect-ratio (/ 16. 9.))
 (define width 400)

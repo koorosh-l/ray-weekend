@@ -68,6 +68,10 @@
   (define (smaller h1 h2)
     (if (< (get-t h1) (get-t h2)) h1 h2))
 
+
+  
+  
+
   (define obj (cdr (car (filter (lambda (o)
 				  (not (zero? (car o))))
 				(sort (map (lambda (o)
